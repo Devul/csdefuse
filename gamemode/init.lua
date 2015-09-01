@@ -42,7 +42,7 @@ function fruit:PlayerInitialSpawn( client )
 		fruit.PrintDebug( "[DEBUG] "..client:Name().." -> Connected" )
 		client.hasChosenTeam = false
 
-	if #player.GetAll() > 1 then
+	if #player.GetAll() > 1 and fruit.RoundState == 0 then
 		fruit.BeginRound()
 	end
 end
@@ -80,13 +80,12 @@ function GM:PlayerSpawn( client )
 		fruit.ForceTeamSelect( client )
 	end
 
-	if models [ client:Team() ] then
-		client:SetModel( table.Random( models[ client:Team() ] ) )
+	if not client:Team() == TEAM_SPECTATOR then
+		fruit:PlayerLoadout( client )
 	end
 
-end
+	client:SetModel( table.Random( models[ client:Team() ] ) )
 
-function GM:PlayerLoadout( client ) 
 	if fruit.defaultLoadout then
 		for _, weapon in pairs(fruit.defaultLoadout) do
 			client:Give(weapon)
@@ -94,7 +93,7 @@ function GM:PlayerLoadout( client )
 		fruit.PrintDebug("[DEBUG] ".. client:Name() .." has received their loadout.")
 	end
 
-	return true
+
 end
 
 local teamToSpawnEnt = {

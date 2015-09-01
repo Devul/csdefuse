@@ -121,12 +121,12 @@ local function DrawBulletHud(bullets, x, y, red, scale)
         
         if bullets == 5 then
 
-            local role_text = LocalPlayer():GetRoleStringRaw()
+            local role_text = team.GetName(LocalPlayer():Team())
 
             if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
             surface.SetDrawColor(specdmcol.r, specdmcol.g, specdmcol.b, smooth * 255)
             else
-            surface.SetDrawColor(textcol[role_text].r, textcol[role_text].g, textcol[role_text].b, smooth * 255)
+            surface.SetDrawColor(255, 255, 255, smooth * 255)
             end
   
             surface.DrawTexturedRect(xpos - 48 + (smooth * 18), y, WIDTH, WIDTH)
@@ -134,7 +134,7 @@ local function DrawBulletHud(bullets, x, y, red, scale)
             if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
               surface.SetDrawColor(specdmcol)
             else
-              surface.SetDrawColor(textcol[role_text])
+              surface.SetDrawColor(255, 255, 255, 255)
             end
 
         end
@@ -166,7 +166,7 @@ if( !IsValid( LocalPlayer() ) or !IsValid( LocalPlayer():GetActiveWeapon() ) ) t
 
     local wep = LocalPlayer():GetActiveWeapon();
     local clip = wep:Clip1() or 0;
-    local maxammo = LocalPlayer():GetActiveWeapon().Primary.ClipSize
+	local maxammo = LocalPlayer():GetAmmoCount(wep:GetPrimaryAmmoType()) or 0
     local red = clip <= math.ceil(maxammo / 7)
 
     local role_text = team.GetName(LocalPlayer():Team())
@@ -178,9 +178,126 @@ if( !IsValid( LocalPlayer() ) or !IsValid( LocalPlayer():GetActiveWeapon() ) ) t
     end
 
     DrawBulletHud( clip, ScrW() - 1085, ScrH() - 27, red, 1.0 )
-
 end
 
+local csgo_classes = {}
+
+local function draw_WeaponSection() -- Section not selection XD
+
+   local pl = LocalPlayer()
+   local hp = pl:Health()
+   local sw = ScrW()
+   local sh = ScrH()
+   local role_text = team.GetName(pl:Team())
+
+   local polygon = {
+
+      { x = sw - 12, y = sh },
+      { x = sw - 12, y = sh - 42 },
+      { x = sw , y = sh - 42 },
+      { x = sw , y = sh - 8 }
+   
+   }
+
+   local polygon_ang = {
+
+      { x = sw - 12, y = sh },
+      { x = sw - 12, y = sh - 2 },
+      { x = sw - 2, y = sh - 8 },
+      { x = sw, y = sh - 8 }
+
+   }
+
+   -- Background
+   surface.SetDrawColor( cols.frame_bg )
+   draw.NoTexture()
+   surface.DrawPoly( polygon )
+
+   surface.DrawRect( sw - 200, sh - 42, 188, 42 )
+   surface.SetMaterial( gradient )
+
+   surface.DrawTexturedRectRotated( sw - 250, sh - 21, 100, 42, 180 )
+
+   surface.SetDrawColor( Color(0,0,0,100) )
+   draw.NoTexture()
+   surface.DrawPoly( polygon_ang ) -- Frame Angle
+
+   surface.DrawRect( sw - 200, sh - 2, 188, 2 ) -- Bottom Line
+   surface.DrawRect( sw - 2, sh - 40, 2, 32 ) -- Right line
+   surface.DrawRect( sw - 200, sh - 42, 200, 2 ) -- Top line
+
+   surface.SetMaterial( gradient )
+   surface.DrawTexturedRectRotated( sw - 250, sh - 41, 100, 2, 180 ) -- top gradient
+   surface.DrawTexturedRectRotated( sw - 250, sh - 1, 100, 2, 180 ) -- bottom gradient
+
+    curcol = Color(255, 255, 255, 255)   
+
+   if pl:GetActiveWeapon() then
+
+    local wep = LocalPlayer():GetActiveWeapon();
+    local ammo_clip = wep:Clip1() or 0;
+	local ammo_max = LocalPlayer():GetAmmoCount(wep:GetPrimaryAmmoType()) or 0
+
+      if ammo_clip != -1 then
+
+         draw.SimpleText( ammo_clip, "csgo_text", sw - 150, sh-38, curcol, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+         draw.SimpleText( "/  "..ammo_max, "csgo_inv", sw - 140, sh-30, curcol, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
+         csgo_bullet_hud()
+
+      else
+
+         local classname = pl:GetActiveWeapon():GetClass()
+
+         if csgo_classes[classname] then
+            local classmat = Material(csgo_classes[classname])
+            surface.SetDrawColor(curcol)
+            surface.SetMaterial(classmat)
+            surface.DrawTexturedRect(sw - 150, sh - 50 , 128, 128)
+           -- print(" THERE SHOULD BE A ICON MATERIAL HERE")
+         end
+      end      
+
+   end
+
+   if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then return end
+
+  local kills = pl:GetNWInt("Tkills")
+  local killicon = Material("csgo_hud/killicon.png")
+  
+  surface.SetDrawColor(Color(255,255,255,255))
+  surface.SetMaterial(killicon)
+
+  local xpos = ScrW()
+  local ypos = ScrH() - 38
+  
+  if kills == 1 then
+    surface.DrawTexturedRect(xpos-240, ypos, 32, 32)
+  elseif kills == 2 then
+    surface.DrawTexturedRect(xpos-240, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-260, ypos, 32, 32)
+    elseif kills == 3 then
+    surface.DrawTexturedRect(xpos-240, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-260, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-280, ypos, 32, 32)
+    elseif kills == 4 then
+    surface.DrawTexturedRect(xpos-240, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-260, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-280, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-300, ypos, 32, 32)
+    elseif kills == 5 then
+    surface.DrawTexturedRect(xpos-240, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-260, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-280, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-300, ypos, 32, 32)
+    surface.DrawTexturedRect(xpos-320, ypos, 32, 32)
+    elseif kills > 5 then
+    surface.DrawTexturedRect(xpos-240, ypos, 32, 32)
+    draw.SimpleText("x"..kills, "kill_count", xpos-220, ypos + 8, Color(255,255,255,255), TEXT_ALIGN_LEFT )
+
+  end
+
+
+end
 
 valuemath = 0
 local function draw_Bar( x, y, w, h, col, col_low, value, lowval )
@@ -292,7 +409,7 @@ end
 function fruit.DrawHUD()
 	draw_CenterAlert()
 	draw_Health()
-	csgo_bullet_hud()
+	draw_WeaponSection()
 
 end
 hook.Add("HUDPaint", "fruit.DrawHUD", fruit.DrawHUD)
