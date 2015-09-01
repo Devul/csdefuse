@@ -237,6 +237,8 @@ end)
 
 hook.Add("Think", "OpenTeamMenu", function(client, key)
 	if LocalPlayer():IsTyping() then return end
+	if gui.IsGameUIVisible() then return end
+	if gui.IsConsoleVisible() then return end
 
 	if input.IsKeyDown( KEY_M ) and not IsValid(teamSelectFrame) then
 		fruit.TeamSelectMenu()
