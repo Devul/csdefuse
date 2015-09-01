@@ -235,8 +235,10 @@ local function draw_WeaponSection() -- Section not selection XD
    if pl:GetActiveWeapon() then
 
     local wep = LocalPlayer():GetActiveWeapon();
-    local ammo_clip = wep:Clip1() or 0;
-	local ammo_max = LocalPlayer():GetAmmoCount(wep:GetPrimaryAmmoType()) or 0
+    if not wep then return end
+
+    local ammo_clip = wep.Clip1 and wep:Clip1() or 0;
+	local ammo_max = LocalPlayer():GetAmmoCount(wep.GetPrimaryAmmoType and wep:GetPrimaryAmmoType() or 0) or 0
 
       if ammo_clip != -1 then
 
