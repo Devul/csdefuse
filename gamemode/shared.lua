@@ -1,4 +1,6 @@
-DeriveGamemode( "sandbox" )
+DeriveGamemode( "base" )
+
+fruit = fruit or GM
 
 fruit.version = "010915"
 
@@ -17,3 +19,10 @@ end
 fruit.util.Include( "sh_config.lua" )
 fruit.util.IncludeInDir( "libs" )
 fruit.util.IncludeInDir( "plugins" )
+
+--[[
+	Team Setup
+]]--
+
+team.SetUp( 1, "Counter-Terrorists", Color( 0, 100, 200, 255 ))
+team.SetUp( 2, "Terrorists", Color( 255, 191, 0, 255 ))
