@@ -69,7 +69,6 @@ function GM:PlayerSpawn( client )
 
 	if not client.hasChosenTeam or client:Team() == 0 then
 		client:SetTeam( TEAM_SPECTATOR ) 
-		fruit:PlayerSpawnAsSpectator( client )
 
 		fruit.ForceTeamSelect( client )
 	end
