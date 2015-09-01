@@ -27,7 +27,10 @@ util.AddNetworkString("fruit_TeamSelectMenu")
 util.AddNetworkString("fruit_SelectTeam")
 util.AddNetworkString("fruit_UpdateRoundState")
 util.AddNetworkString("fruit_StartRound")
- 
+util.AddNetworkString("fruit_UpdateScore")
+
+local meta = FindMetaTable("Player")
+
 function fruit.PrintDebug( any )
 	if tobool( fruit.DebugMode ) then 
 		return print( any )
@@ -56,6 +59,33 @@ function fruit:RestartRound()
 	fruit:BeginRound()
 end
 
+function fruit:EndRound( winner )
+	if winner == TEAM_COUNTERTERRORISTS then
+		SCORE_CT = SCORE_CT + 1
+		if SCORE_CT > 15 then
+			print("Game won! Restarting")
+		end
+		
+		net.Start("fruit_UpdateScore")
+			net.WriteInt(SCORE_CT, 8)
+			net.WriteInt(SCORE_T, 8)
+		net.Broadcast()
+
+	elseif winner == TEAM_TERRORISTS then
+		SCORE_T = SCORE_T + 1
+		if SCORE_T > 15 then
+			print("Game won! Restarting")
+		end
+
+		net.Start("fruit_UpdateScore")
+			net.WriteInt(SCORE_CT, 8)
+			net.WriteInt(SCORE_T, 8)
+		net.Broadcast()
+	else
+		-- Round draw
+	end
+end
+
 function fruit:BeginRound()
 
 	fruit.RoundState = ROUND_INTRO
@@ -79,6 +109,7 @@ function fruit:BeginRound()
 			end
 		timer.Create("RoundTimer", fruit.config.RoundLength or 120, 1, function()
 				fruit.RoundState = ROUND_OUTRO
+				fruit:EndRound( TEAM_TERRORISTS )
 			timer.Create("OutroTimer", fruit.config.RoundOutroTime or 5, 1, function()
 				fruit.RestartRound()
 			end)

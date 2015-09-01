@@ -518,3 +518,13 @@ net.Receive("fruit_StartRound", function(len)
   end)
 
 end)
+
+net.Receive("fruit_UpdateScore", function(len)
+  local ScoreCT = net.ReadInt(8)
+  local ScoreT = net.ReadInt(8)
+
+  SCORE_CT = ScoreCT
+  SCORE_T = ScoreT
+
+  LocalPlayer():ChatPrint("Score is now "..SCORE_CT..":"..SCORE_T)
+end)
