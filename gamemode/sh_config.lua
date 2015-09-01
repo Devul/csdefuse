@@ -4,6 +4,8 @@ fruit.useCustomModels = false
 
 CreateConVar( "fruit_cs_maxMoney", "16000", { FCVAR_NOTIFY, FCVAR_ARCHIVE } )
 
+fruit.config.currencyStr = "$"
+
 -- Key = teamId
 fruit.config.models = {
 	[1] = {"models/player/urban.mdl"},
@@ -16,6 +18,52 @@ fruit.config.customModels = {
 	[1] = {"models/player/ctm_fbi_varianta.mdl"},
 	[2] = {"models/player/tm_phoenix.mdl"},
 	[3] = {"models/gman_high.mdl"},
+}
+
+fruit.config.defaultKnives = {
+	"csgo_default_knife", "csgo_default_t"
+}
+
+fruit.config.knifeSkins = {
+	-- Bayonets
+	["Bayonet"] = "csgo_bayonet",
+	["Bayonet - Crimson Web"] = "csgo_bayonet_crimsonwebs",
+	["Bayonet - Fade"] = "csgo_bayonet_fade",
+	["Bayonet - Night"] = "csgo_bayonet_night",
+	-- Butterfly Knives
+	["Butterfly Knife"] = "csgo_butterfly",
+	["Butterfly Knife - Crimson Web"] = "csgo_butterfly_crimsonwebs",
+	["Butterfly Knife - Fade"] = "csgo_butterfly_fade",
+	["Butterfly Knife - Night"] = "csgo_butterfly_night",
+	-- Falchion
+	["Falchion"] = "csgo_falchion",
+	["Falchion Knife - Crimson Web"] = "csgo_falchion_crimsonwebs",
+	["Falchion Knife - Fade"] = "csgo_falchion_fade",
+	["Falchion Knife - Night"] = "csgo_falchion_night",
+	-- Flip Knife
+	["Flip Knife"] = "csgo_flip",
+	["Flip Knife - Crimson Web"] = "csgo_flip_crimsonwebs",
+	["Flip Knife - Fade"] = "csgo_flip_fade",
+	["Flip Knife - Night"] = "csgo_flip_night",
+	-- Gut Knife
+	["Gut Knife"] = "csgo_gut",
+	["Gut Knife - Crimson Web"] = "csgo_gut_crimsonwebs",
+	["Gut Knife - Fade"] = "csgo_gut_fade",
+	["Gut Knife - Night"] = "csgo_gut_night",
+	-- Huntsman Knife
+	["Huntsman Knife"] = "csgo_huntsman",
+	["Huntsman Knife - Crimson Web"] = "csgo_huntsman_crimsonwebs",
+	["Huntsman Knife - Fade"] = "csgo_huntsman_fade",
+	["Huntsman Knife - Night"] = "csgo_huntsman_night",
+	-- Karambit
+	["Karambit"] = "csgo_karambit",
+	["Karambit - Crimson Web"] = "csgo_karambit_crimsonwebs",
+	["Karambit - Fade"] = "csgo_karambit_fade",
+	-- M9 Bayonet
+	["M9 Bayonet"] = "csgo_m9",
+	["M9 Bayonet - Crimson Web"] = "csgo_m9_crimsonwebs",
+	["M9 Bayonet - Fade"] = "csgo_m9_fade",
+	["M9 Bayonet - Night"] = "csgo_m9_night",
 }
 
 -- First Tier Key = teamId
