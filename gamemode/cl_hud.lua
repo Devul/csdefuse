@@ -78,13 +78,8 @@ local function DrawBulletHud(bullets, x, y, red, scale)
        HALFWIDTH = 0.375 * WIDTH
     end
     if not bullets or bullets < 1 then return end
-    if red then
-        if LocalPlayer():GetRole() == ROLE_TRAITOR or LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
-        surface.SetDrawColor(255,255,255,255)
-        else
-        surface.SetDrawColor(255,75,75,255)
-        end
-    end
+     
+    surface.SetDrawColor(255,255,255,255)
     
     if LastBullet != bullets then
         Changedbullets = math.min(bullets, 5 - (LastBullet - bullets))
@@ -123,19 +118,9 @@ local function DrawBulletHud(bullets, x, y, red, scale)
 
             local role_text = team.GetName(LocalPlayer():Team())
 
-            if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
-            surface.SetDrawColor(specdmcol.r, specdmcol.g, specdmcol.b, smooth * 255)
-            else
             surface.SetDrawColor(255, 255, 255, smooth * 255)
-            end
-  
             surface.DrawTexturedRect(xpos - 48 + (smooth * 18), y, WIDTH, WIDTH)
-
-            if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
-              surface.SetDrawColor(specdmcol)
-            else
-              surface.SetDrawColor(255, 255, 255, 255)
-            end
+            surface.SetDrawColor(255, 255, 255, 255)
 
         end
         
@@ -171,11 +156,7 @@ if( !IsValid( LocalPlayer() ) or !IsValid( LocalPlayer():GetActiveWeapon() ) ) t
 
     local role_text = team.GetName(LocalPlayer():Team())
 
-    if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
-      surface.SetDrawColor(specdmcol)
-    else
-      surface.SetDrawColor(Color(255, 255, 255, 255))
-    end
+    surface.SetDrawColor(Color(255, 255, 255, 255))
 
     DrawBulletHud( clip, ScrW() - 1085, ScrH() - 27, red, 1.0 )
 end
@@ -260,8 +241,6 @@ local function draw_WeaponSection() -- Section not selection XD
       end      
 
    end
-
-   if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then return end
 
   local kills = pl:GetNWInt("Tkills")
   local killicon = Material("csgo_hud/killicon.png")
@@ -369,13 +348,11 @@ local function draw_Health()
    surface.SetMaterial( gradient )
    surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
    
-   if LocalPlayer().IsGhost and LocalPlayer():IsGhost() then
-      surface.SetDrawColor(specdmcol)  
-   elseif hp <= 15 then
+	if hp <= 15 then
       surface.SetDrawColor( cols.low_hp )
-   else
+  	else
       surface.SetDrawColor( Color(0, 0, 0, 150) )
-   end
+   	end
 
    surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
    surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
