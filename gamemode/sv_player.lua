@@ -48,3 +48,25 @@ function meta:setMoney( amount )
 		net.WriteInt(amount, 16)
 	net.Send( self )
 end
+
+function GM:DoPlayerDeath( client, attacker, dmg )
+	local ragdoll = ents.Create("prop_ragdoll")
+	ragdoll:SetPos(client:GetPos())
+	ragdoll:SetAngles(Angle(0,client:GetAngles().Yaw,0))
+	local model = client:GetModel()
+	if string.lower(model) == "models/player/corpse1.mdl" then
+		model = "models/Humans/corpse1.mdl"
+	end
+	ragdoll:SetModel(model)
+	ragdoll:Spawn()
+	ragdoll:Activate()
+	ragdoll:SetCollisionGroup(COLLISION_GROUP_DEBRIS)
+	ragdoll:SetVelocity(client:GetVelocity())
+	ragdoll.OwnerINT = client:EntIndex()
+	ragdoll.PhysgunPickup = false
+	ragdoll.CanTool = false
+end
+
+function GM:PlayerCanHearPlayersVoice( listener, talker )
+	return (listener:Team() == talker:Team())
+end
