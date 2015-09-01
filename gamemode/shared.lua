@@ -26,3 +26,4 @@ fruit.util.IncludeInDir( "plugins" )
 
 team.SetUp( 1, "Counter-Terrorists", Color( 0, 100, 200, 255 ))
 team.SetUp( 2, "Terrorists", Color( 255, 191, 0, 255 ))
+team.SetUp( 3, "Spectators", Color( 100, 100, 100, 255 ))
