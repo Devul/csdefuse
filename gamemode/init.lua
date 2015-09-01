@@ -23,6 +23,9 @@ fruit.isFinished = false
 SCORE_T = 0
 SCORE_CT = 0
 
+PLAYERS_T = {}
+PLAYERS_CT = {}
+
 util.AddNetworkString("fruit_TeamSelectMenu")
 util.AddNetworkString("fruit_SelectTeam")
 util.AddNetworkString("fruit_UpdateRoundState")
@@ -56,6 +59,9 @@ function fruit:RestartRound()
 		end
 	end
 
+	PLAYERS_CT = {}
+	PLAYERS_T = {}
+
 	fruit:BeginRound()
 end
 
@@ -65,10 +71,11 @@ function fruit:EndRound( winner )
 		if SCORE_CT > 15 then
 			print("Game won! Restarting")
 		end
-		
+
 		net.Start("fruit_UpdateScore")
 			net.WriteInt(SCORE_CT, 8)
 			net.WriteInt(SCORE_T, 8)
+			net.WriteInt(winner, 8)
 		net.Broadcast()
 
 	elseif winner == TEAM_TERRORISTS then
@@ -80,6 +87,7 @@ function fruit:EndRound( winner )
 		net.Start("fruit_UpdateScore")
 			net.WriteInt(SCORE_CT, 8)
 			net.WriteInt(SCORE_T, 8)
+			net.WriteInt(winner, 8)
 		net.Broadcast()
 	else
 		-- Round draw
@@ -105,6 +113,13 @@ function fruit:BeginRound()
 			fruit.RoundState = ROUND_ACTIVE
 
 			for _, v in pairs(player.GetAll()) do
+				if v:Team() == TEAM_COUNTERTERRORISTS then
+					PLAYERS_CT[v:UserID()] = true
+				end
+				if v:Team() == TEAM_TERRORISTS then
+					PLAYERS_T[v:UserID()] = true
+				end
+
 				fruit:SetPlayerSpeed( v, fruit.config.walkSpeed, fruit.config.runSpeed )
 			end
 		timer.Create("RoundTimer", fruit.config.RoundLength or 120, 1, function()
@@ -123,6 +138,21 @@ function fruit:PlayerInitialSpawn( client )
 
 	if #player.GetAll() > 1 and fruit.RoundState == ROUND_WAITINGFORPLAYERS then
 		fruit:BeginRound()
+	end
+end
+
+function fruit:DoPlayerDeath( client, attacker, dmg )
+	if client:Team() == TEAM_COUNTERTERRORISTS then
+		PLAYERS_CT[client:UserID()] = nil
+	end
+	if client:Team() == TEAM_TERRORISTS then
+		PLAYERS_T[client:UserID()] = nil
+	end
+
+	if table.Count(PLAYERS_CT) < 1 then
+		fruit:EndRound(TEAM_TERRORISTS)
+	elseif table.Count(PLAYERS_T) < 1 then
+		fruit:EndRound(TEAM_COUNTERTERRORISTS)
 	end
 end
 

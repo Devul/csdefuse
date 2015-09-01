@@ -523,6 +523,16 @@ net.Receive("fruit_UpdateScore", function(len)
   local ScoreCT = net.ReadInt(8)
   local ScoreT = net.ReadInt(8)
 
+  local winner = net.ReadInt(8)
+
+  if winner == TEAM_TERRORISTS then
+    surface.PlaySound("radio/terwin.wav")
+  elseif winner == TEAM_COUNTERTERRORISTS then
+    surface.PlaySound("radio/ctwin.wav")
+  else
+    surface.PlaySound("radio/rounddraw.wav")
+  end
+
   SCORE_CT = ScoreCT
   SCORE_T = ScoreT
 
