@@ -17,6 +17,8 @@ fruit.inWarmup = false
 fruit.inHalfTime = false
 fruit.isFinished = false
 
+util.AddNetworkString("fruit_TeamSelectMenu")
+
 function fruit.PrintDebug( any )
 	if tobool( fruit.DebugMode ) then 
 		return print( any )
@@ -33,11 +35,21 @@ end
 
 function fruit:PlayerInitialSpawn( client )
 		fruit.PrintDebug( "[DEBUG] "..client:Name().." -> Connected" )
+		client.hasChosenTeam = false
 end
 
-function fruit:PlayerSpawn( ply )
-	if ply:Team() == 0 then
-		ply:SetTeam( TEAM_SPECTATOR ) 
-		fruit:PlayerSpawnAsSpectator( ply )
+function fruit.ForceTeamSelect( client )
+	fruit.PrintDebug("[DEBUG] "..client:Name().." is selecting a Team.")
+	
+	net.Start("fruit_TeamSelectMenu")
+	net.Send( client )
+end
+
+function fruit:PlayerSpawn( client )
+	if not client.hasChosenTeam or client:Team() == 0 then
+		client:SetTeam( TEAM_SPECTATOR ) 
+		fruit:PlayerSpawnAsSpectator( client )
+
+		fruit.ForceTeamSelect( client )
 	end
 end
