@@ -7,7 +7,7 @@ include( "shared.lua" )
 
 fruit.Loadout = { "weapon_physcannon" }
 
-CreateConVar( "fruit_DebugMode", 1, FCVAR_NOTIFY, "int boolean (0 = false, 1 = true)" )
+CreateConVar( "fruit_DebugMode", 1, FCVAR_NOTIFY, "int (0 = false, 1 = true)" )
 fruit.DebugMode = GetConVar( "fruit_DebugMode" )
 
 function fruit.PrintDebug( any )
