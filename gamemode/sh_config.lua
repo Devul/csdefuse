@@ -1,0 +1,1 @@
+fruit.config = fruit.config or {}

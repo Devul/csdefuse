@@ -1,0 +1,7 @@
+"cs_defuse"
+{
+	"base"		"sandbox"
+	"title"		"Counter-Strike: Defuse"
+	"author"	"Devul"
+	"menusystem"	"1"
+}
