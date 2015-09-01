@@ -13,7 +13,7 @@ AddCSLuaFile( "sh_util.lua" )
 include( "sh_util.lua" )
 
 function fruit:Initialize()
-	print("[GAMEMODE] "..self.Name.." initialised.")
+	print( "[GAMEMODE] "..self.Name.." initialised." )
 end
 
 fruit.util.Include( "sh_config.lua" )
@@ -24,6 +24,29 @@ fruit.util.IncludeInDir( "plugins" )
 	Team Setup
 ]]--
 
-team.SetUp( 1, "Counter-Terrorists", Color( 0, 100, 200, 255 ))
-team.SetUp( 2, "Terrorists", Color( 255, 191, 0, 255 ))
-team.SetUp( 3, "Spectators", Color( 100, 100, 100, 255 ))
+fruit.teams = {}
+
+local teamData
+local teamId = 0
+local function createTeam( name, info )
+
+	teamId = teamId + 1
+	teamData = info
+	teamData.name = name
+
+	team.SetUp( teamId, teamData.name, (teamData.color or Color( 0, 255, 0 )) )
+
+	return table.insert( fruit.teams, teamData )
+end
+
+fruit.teams.CT = createTeam("Counter-Terrorists", {
+	color = Color( 0, 100, 200, 255 )
+})
+
+fruit.teams.T = createTeam("Terrorists", {
+	color = Color( 255, 191, 0, 255 )
+})
+
+fruit.teams.SPECTATOR = createTeam("Spectators", {
+	color = Color(  100, 100, 100, 255 )
+})
