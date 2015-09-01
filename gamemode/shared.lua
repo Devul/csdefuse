@@ -23,6 +23,8 @@ fruit.util.Include( "cl_interface.lua" )
 fruit.util.Include( "sv_util.lua" )
 fruit.util.Include( "cl_util.lua" )
 fruit.util.Include( "cl_hud.lua" )
+fruit.util.Include( "cl_player.lua" )
+fruit.util.Include( "sv_player.lua" )
 fruit.util.IncludeInDir( "libs" )
 fruit.util.IncludeInDir( "plugins" )
  
