@@ -163,6 +163,14 @@ function PANEL:Init()
 		draw.OutlinedBox(0, 0, w, h, 4, color_white)
 	end
 
+	self.leftContainer.DoClick = function()
+		net.Start("fruit_SelectTeam")
+			net.WriteInt(1, 4)
+		net.SendToServer()
+
+		self:Remove()
+	end
+
 	local tWidth, tWidth = surface.GetTextSize("Terrorists")
 	self.rightHeader = self.container:Add("DLabel")
 	self.rightHeader:SetPos(self.container:GetWide() * 0.75 - 10 - (tWidth), 4)
@@ -185,6 +193,15 @@ function PANEL:Init()
 		surface.DrawTexturedRect( -800, -256, 1920, 1080 )
 
 		draw.OutlinedBox(0, 0, w, h, 4, color_white)
+	end
+
+
+	self.rightContainer.DoClick = function()
+		net.Start("fruit_SelectTeam")
+			net.WriteInt(2, 4)
+		net.SendToServer()
+
+		self:Remove()
 	end
 end
 
