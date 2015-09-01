@@ -5,6 +5,9 @@ AddCSLuaFile( "shared.lua" )
 
 include( "shared.lua" )
 
+AddCSLuaFile( "sh_config.lua" )
+include( "sh_config.lua" )
+
 fruit.Loadout = { "weapon_physcannon" }
 
 CreateConVar( "fruit_DebugMode", 1, FCVAR_NOTIFY, "int (0 = false, 1 = true)" )
@@ -82,13 +85,15 @@ function GM:PlayerSpawn( client )
 		for _, weapon in pairs(fruit.defaultLoadout) do
 			client:Give(weapon)
 		end
-		fruit.PrintDebug("[DEBUG] ".. client:Name() .." has received their loadout.")
+		fruit.PrintDebug("[DEBUG] ".. client:Name() .." has received their Default loadout.")
 	end
 
-	if fruit.teamBasedLoadout then
-		for _, wep in pairs(fruit.teamBasedLoadout[client:Team()] or {}) do
+	if fruit.teamBasedLoadout[client:Team()] then
+		for _, wep in pairs(fruit.teamBasedLoadout[client:Team()]) do
+				print(wep)
 			client:Give(wep)
 		end
+		fruit.PrintDebug("[DEBUG] ".. client:Name() .." has received their Team based loadout.")
 	end
 end
 
@@ -102,7 +107,8 @@ local teamToSpawnEnt = {
 function GM:PlayerSelectSpawn( client )
 	if client:Team() == TEAM_SPECTATOR then return end
 
-	local spawns = ents.FindByClass( teamToSpawnEnt[ client:Team() ] )
+
+	local spawns = ents.FindByClass( teamToSpawnEnt and teamToSpawnEnt[ client:Team() ] or "info_player_counterterrorist" )
 	local random_entry = math.random( #spawns )
 
 	return spawns[ random_entry ]

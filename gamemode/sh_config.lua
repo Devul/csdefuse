@@ -31,8 +31,6 @@ fruit.config.weapons = {
 	}
 }
 
-}
-
 fruit.roundStates = {}
 local roundState
 local function createRoundState(name)
@@ -49,8 +47,8 @@ ROUND_WAITINGFORPLAYERS = createRoundState("Waiting for Players")
 fruit.defaultLoadout = {}
 
 fruit.teamBasedLoadout = {
-	[1] = {"csgo_default_knife", "weapon_csgo_p2000"},
-	[2] = {"csgo_default_t", "weapon_csgo_glock"}
+	[1] = {"csgo_default_knife", "weapon_csgo_usp"},
+	[2] = {"csgo_default_t", "weapon_csgo_glock"},
 }
 
 print("Configuration loaded")
