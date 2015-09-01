@@ -1,7 +1,9 @@
 local meta = FindMetaTable("Player")
 
 fruit = fruit or {}
-fruit.player = {}
+
+--if fruit.player then return end
+fruit.player = fruit.player or {}
 
 util.AddNetworkString("setUpMoney")
 util.AddNetworkString("sendMoneyChange")
