@@ -348,11 +348,11 @@ local function draw_Health()
    surface.SetMaterial( gradient )
    surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
    
-	if hp <= 15 then
+  if hp <= 15 then
       surface.SetDrawColor( cols.low_hp )
-  	else
+    else
       surface.SetDrawColor( Color(0, 0, 0, 150) )
-   	end
+    end
 
    surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
    surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
@@ -380,15 +380,100 @@ local function draw_Health()
 
    draw.SimpleText( player_health, "csgo_text", 82, sh - 40, num_col, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 
-	if GetConVar("fruit_hud_drawbars"):GetBool() then
-		draw_Bar( 90, sh - 26, 110, 18, num_col, white, math.Clamp( hp, 0, 100 ), 15 )
-	end
+  if GetConVar("fruit_hud_drawbars"):GetBool() then
+    draw_Bar( 90, sh - 26, 110, 18, num_col, white, math.Clamp( hp, 0, 100 ), 15 )
+  end
+end
+
+local function draw_Money()
+
+   local pl = LocalPlayer()
+   local hp = pl:Health()
+   local sh = ScrH() * 0.2
+   local role_text = team.GetName(LocalPlayer():Team())
+
+   local polygon = {
+
+      { x = 0, y = sh - 8 },
+      { x = 0, y = sh - 42 },
+      { x = 12, y = sh - 42 },
+      { x = 12, y = sh }
+
+   }
+
+   local polygon_ang = {
+
+      { x = 0, y = sh - 8 },
+      { x = 2, y = sh - 8 }, 
+      { x = 12, y = sh - 2 },
+      { x = 12, y = sh }
+
+   }
+
+   if hp <= 15 then
+      surface.SetDrawColor( cols.low_hp )
+   else
+      surface.SetDrawColor( cols.frame_bg )
+   end
+   
+   if pl:GetNWFloat("w_stamina") and pl:GetNWFloat("w_stamina") != 0 then
+      frame_width = 318
+   else
+      frame_width = 188
+   end
+
+   xpos = 12
+   edgepos = xpos + frame_width
+
+   draw.NoTexture()
+   surface.DrawPoly( polygon )
+   surface.DrawRect( xpos, sh - 42, frame_width, 42) -- Big box
+
+   surface.SetMaterial( gradient )
+   surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
+   
+  if hp <= 15 then
+      surface.SetDrawColor( cols.low_hp )
+    else
+      surface.SetDrawColor( Color(0, 0, 0, 150) )
+    end
+
+   surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
+   surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
+   surface.DrawRect( xpos, sh - 2, frame_width, 2 ) -- Top Horizontal
+   draw.NoTexture()
+   surface.DrawPoly( polygon_ang )
+
+   surface.SetMaterial( gradient )
+   surface.DrawTexturedRect( edgepos, sh - 42, 100, 2 ) -- gradient frame upper
+   surface.DrawTexturedRect( edgepos, sh - 2, 100, 2 ) -- gradient frame lower
+
+   if hp <= 15 then
+      surface.SetDrawColor( cols.white )
+      num_col = cols.white
+   else
+      surface.SetDrawColor( Color(255, 255, 255, 255) )
+      num_col = Color(255, 255, 255, 255) 
+   end
+
+   local health_tex = Material( "csgo_hud/shoppingcart.png", "smooth mips" )
+   surface.SetMaterial( health_tex )
+   surface.DrawTexturedRect( 14, sh - 30, 20, 20 )
+
+   money = fruit.formatMoney(getMoney())
+
+   draw.SimpleText( money, "csgo_text", 42, sh - 40, num_col, TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+
+  if GetConVar("fruit_hud_drawbars"):GetBool() then
+    draw_Bar( 90, sh - 26, 110, 18, num_col, white, math.Clamp( hp, 0, 100 ), 15 )
+  end
 end
 
 function fruit.DrawHUD()
 	draw_CenterAlert()
 	draw_Health()
 	draw_WeaponSection()
+  draw_Money()
 
 end
 hook.Add("HUDPaint", "fruit.DrawHUD", fruit.DrawHUD)
