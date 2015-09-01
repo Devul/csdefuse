@@ -17,6 +17,8 @@ function fruit:Initialize()
 end
 
 fruit.util.Include( "sh_config.lua" )
+fruit.util.Include( "cl_interface.lua" )
+fruit.util.Include( "sv_util.lua" )
 fruit.util.IncludeInDir( "libs" )
 fruit.util.IncludeInDir( "plugins" )
 
