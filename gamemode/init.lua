@@ -94,6 +94,11 @@ function GM:PlayerSpawn( client )
 		end
 		fruit.PrintDebug("[DEBUG] ".. client:Name() .." has received their Team based loadout.")
 	end
+
+	local userId = client:UserID()
+	if fruit.player[userId] and fruit.player[userId].knife then
+		client:setKnife(fruit.player[userId].knife)
+	end
 end
 
 local teamToSpawnEnt = {

@@ -77,6 +77,8 @@ end
 
 local selectedKnife
 function meta:setKnife(knifeName)
+	local userId = self:UserID()
+
 	if not self:Alive() then return end
 	if self:Team() == TEAM_SPECTATOR then return end
 
@@ -93,6 +95,9 @@ function meta:setKnife(knifeName)
 			self:StripWeapon(wep)
 		end
 	end
+
+	fruit.player[userId] = fruit.player[userId] or {}
+	fruit.player[userId].knife = knifeName
 
 	self:Give(selectedKnife)
 	self:SelectWeapon(selectedKnife)
