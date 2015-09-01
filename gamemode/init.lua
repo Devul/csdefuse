@@ -58,12 +58,6 @@ function fruit.ForceTeamSelect( client )
 	net.Send( client )
 end
 
-local models = {
-	[TEAM_COUNTERTERRORISTS] = {"models/player/urban.mdl"},
-	[TEAM_TERRORISTS] = {"models/player/leet.mdl"},
-	[TEAM_SPECTATOR] = {"models/gman_high.mdl"},
-}
-
 function GM:PlayerSpawn( client )
 	print("PLayer Is Spawn")
 	print(client.NextTeamChange)
@@ -84,14 +78,22 @@ function GM:PlayerSpawn( client )
 		fruit:PlayerLoadout( client )
 	end
 
-	client:SetModel( table.Random( models[ client:Team() ] ) )
-
+	client:SetModel( table.Random( ( fruit.useCustomModels and fruit.config.customModels[ client:Team() ] or fruit.config.models[ client:Team() ] ) ) )
+	client:SetupHands()
+	
 	if fruit.defaultLoadout then
 		for _, weapon in pairs(fruit.defaultLoadout) do
 			client:Give(weapon)
 		end
 		fruit.PrintDebug("[DEBUG] ".. client:Name() .." has received their loadout.")
 	end
+
+	if fruit.teamBasedLoadout then
+		for _, wep in pairs(fruit.teamBasedLoadout[client:Team()] or {}) do
+			client:Give(wep)
+		end
+	end
+
 
 
 end
