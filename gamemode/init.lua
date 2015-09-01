@@ -20,8 +20,13 @@ fruit.inWarmup = false
 fruit.inHalfTime = false
 fruit.isFinished = false
 
+SCORE_T = 0
+SCORE_CT = 0
+
 util.AddNetworkString("fruit_TeamSelectMenu")
 util.AddNetworkString("fruit_SelectTeam")
+util.AddNetworkString("fruit_UpdateRoundState")
+util.AddNetworkString("fruit_StartRound")
  
 function fruit.PrintDebug( any )
 	if tobool( fruit.DebugMode ) then 
@@ -37,16 +42,56 @@ function fruit:PlayerLoadout( client )
 	fruit.PrintDebug( "[DEBUG] "..client:Name().." -> Loadout Assigned" )
 end
 
-function fruit.BeginRound()
-	fruit.RoundState = ROUND_ACTIVE
+function fruit:RestartRound()
+	for k,v in pairs(ents.FindByClass("prop_ragdoll")) do
+		v:Remove()
+	end
+
+	for k,v in pairs(player.GetAll()) do
+		if v:Team() != TEAM_SPECTATOR then
+			v:Spawn()
+		end
+	end
+
+	fruit:BeginRound()
+end
+
+function fruit:BeginRound()
+
+	fruit.RoundState = ROUND_INTRO
+	
+	timer.Remove("IntroTimer")
+	timer.Remove("RoundTimer")
+	timer.Remove("OutroTimer")
+
+	net.Start("fruit_StartRound")
+	net.Broadcast()
+
+	for _, v in pairs(player.GetAll()) do
+		fruit:SetPlayerSpeed( v, 0.0001, 0.001 )
+	end
+
+	timer.Create("IntroTimer", fruit.config.RoundIntroTime or 5, 1, function()
+			fruit.RoundState = ROUND_ACTIVE
+
+			for _, v in pairs(player.GetAll()) do
+				fruit:SetPlayerSpeed( v, fruit.config.walkSpeed, fruit.config.runSpeed )
+			end
+		timer.Create("RoundTimer", fruit.config.RoundLength or 120, 1, function()
+				fruit.RoundState = ROUND_OUTRO
+			timer.Create("OutroTimer", fruit.config.RoundOutroTime or 5, 1, function()
+				fruit.RestartRound()
+			end)
+		end)
+	end)
 end
 
 function fruit:PlayerInitialSpawn( client )
 		fruit.PrintDebug( "[DEBUG] "..client:Name().." -> Connected" )
 		client.hasChosenTeam = false
 
-	if #player.GetAll() > 1 and fruit.RoundState == 0 then
-		fruit.BeginRound()
+	if #player.GetAll() > 1 and fruit.RoundState == ROUND_WAITINGFORPLAYERS then
+		fruit:BeginRound()
 	end
 end
 
@@ -62,12 +107,24 @@ function fruit.ForceTeamSelect( client )
 end
 
 function GM:PlayerSpawn( client )
+	if fruit.RoundState == ROUND_ACTIVE and client.hasChosenTeam then
+		print("Deny spawn")
+	--return false
+	end
+
 	if client.NextTeamChange then
 		client:SetTeam(client.NextTeamChange)
 		client:Spawn()
 	end
 
 	if not client.hasChosenTeam or client:Team() == 0 then
+		if client:IsBot() then
+			local teamId = math.random(1,2)
+				fruit.SelectTeam(client, teamId)
+				client:SetTeam(teamId)
+				client:Spawn()
+		end
+
 		client:SetTeam( TEAM_SPECTATOR ) 
 
 		fruit.ForceTeamSelect( client )
@@ -119,9 +176,7 @@ function GM:PlayerSelectSpawn( client )
 
 end
 
-net.Receive( "fruit_SelectTeam", function( len, client )
-	local teamId = net.ReadInt(4)
-
+function fruit.SelectTeam(client, teamId)
 	if not fruit.teams[teamId] then fruit.PrintDebug( "[DEBUG]"..client:Name().." -> Attempted Invalid Team Request" ) return end
 
 	if client.lastChosenTeamTime and (client.lastChosenTeamTime + CurTime()) < CurTime() then
@@ -133,7 +188,7 @@ net.Receive( "fruit_SelectTeam", function( len, client )
 	client.hasChosenTeam = true
 	client.lastChosenTeamTime = CurTime()
 
-	if fruit.RoundState == ROUND_ACTIVE then
+	if fruit.RoundState and fruit.RoundState == ROUND_ACTIVE then
 		client.NextTeamChange = teamId
 		fruit.Notify(client, 2, 4, "You will be switched to "..team.GetName(teamId).. " when you next spawn.")
 	else
@@ -144,4 +199,10 @@ net.Receive( "fruit_SelectTeam", function( len, client )
 	if not fruit.RoundState == ROUND_ACTIVE then
 		client:Spawn()
 	end
+
+end
+
+net.Receive( "fruit_SelectTeam", function( len, client )
+		local teamId = net.ReadInt(4)
+		fruit.SelectTeam(client, teamId)
 end)

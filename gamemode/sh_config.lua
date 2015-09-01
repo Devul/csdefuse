@@ -6,6 +6,13 @@ CreateConVar( "fruit_cs_maxMoney", "16000", { FCVAR_NOTIFY, FCVAR_ARCHIVE } )
 
 fruit.config.currencyStr = "$"
 
+fruit.config.RoundIntroTime = 5 -- 5 seconds.
+fruit.config.RoundOutroTime = 5 -- 5 seconds.
+fruit.config.RoundLength = 120 -- 120 seconds.
+
+fruit.config.walkSpeed = 250
+fruit.config.runSpeed = 250
+
 -- Key = teamId
 fruit.config.models = {
 	[1] = {"models/player/urban.mdl"},
@@ -137,14 +144,16 @@ fruit.roundStates = {}
 local roundState
 local function createRoundState(name)
 	roundState = {}
-	roundState.name = Name
+	roundState.name = name
 
-	table.insert(fruit.roundStates, roundState)
+	return table.insert(fruit.roundStates, roundState)
 end
 
 ROUND_ACTIVE = createRoundState("Active")
 ROUND_WARMINGUP = createRoundState("Warming Up")
 ROUND_WAITINGFORPLAYERS = createRoundState("Waiting for Players")
+ROUND_INTRO = createRoundState("Round Intro")
+ROUND_OUTRO = createRoundState("Round Outro")
 
 fruit.defaultLoadout = {}
 

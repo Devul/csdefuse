@@ -9,8 +9,6 @@ fruit.Author = "Devul"
 fruit.Email = "devultj@gmail.com"
 fruit.Website = "devul.me"
 
-fruit.RoundState = 0
-
 AddCSLuaFile( "sh_util.lua" )
 include( "sh_util.lua" )
 
@@ -19,6 +17,7 @@ fruit.util.Include( "sh_config.lua" )
 function fruit:Initialize()
 	print( "[GAMEMODE] "..self.Name.." initialised." )
 end
+
 fruit.util.Include( "cl_interface.lua" )
 fruit.util.Include( "sv_util.lua" )
 fruit.util.Include( "cl_util.lua" )
@@ -27,7 +26,9 @@ fruit.util.Include( "cl_player.lua" )
 fruit.util.Include( "sv_player.lua" )
 fruit.util.IncludeInDir( "libs" )
 fruit.util.IncludeInDir( "plugins" )
- 
+
+fruit.RoundState = ROUND_WAITINGFORPLAYERS
+
 --[[
 	Team Setup
 ]]--

@@ -35,21 +35,26 @@ local hudPosY = 40
 
 local function draw_CenterAlert()
    local rs = fruit.RoundState
+   local timeLeft = timer.TimeLeft("RoundTimer")
 
    -- Round Over = rs 4
    -- Warmup = rs2
    -- wait = rs 1
     
 
-   if rs == 0 then
-      text = "WAITING FOR PLAYERS"
-   elseif rs == 2 then
+  if rs == ROUND_INTRO then
+      text = "ROUND STARTING"
+  elseif rs == ROUND_WARMINGUP then
       text = "WARMING UP"
-   elseif rs == 3 then
+  elseif rs == ROUND_WAITINGFORPLAYERS then
       text = "WAITING FOR PLAYERS"
+  elseif rs == ROUND_ACTIVE then
+      text = "ROUND ACTIVE"
+  elseif rs == ROUND_OUTRO then
+      text = "ROUND ENDED"
    end
 
-   if rs != 1 then
+   if rs != 0 then
 
       surface.SetDrawColor( cols.frame_bg )
       surface.DrawRect( ScrW() /4, hudPosY, ScrW() /2, 42 )
@@ -64,6 +69,7 @@ local function draw_CenterAlert()
       surface.DrawTexturedRectRotated( (ScrW() / 4) - 50, hudPosY + 41, 100, 2, 180 )
 
       draw.SimpleText( text, "csgo_text", ScrW() /2, hudPosY + 21, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+      draw.SimpleText( string.ToMinutesSeconds( timeLeft ), "csgo_text", ScrW() /2, hudPosY - 21, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
    end
 
@@ -488,3 +494,27 @@ function GM:HUDShouldDraw(name)
    return true
 end
 
+net.Receive("fruit_StartRound", function(len)
+
+  timer.Remove("IntroTimer")
+  timer.Remove("RoundTimer")
+  timer.Remove("OutroTimer")
+  timer.Remove("TickRoundTimer")
+  timer.Remove("TickOutroFiveTimes")
+
+  fruit.RoundState = ROUND_INTRO
+  timer.Create("IntroTimer", fruit.config.RoundIntroTime or 5, 1, function()
+      fruit.RoundState = ROUND_ACTIVE
+
+      surface.PlaySound("music/valve_csgo_01/startround_0"..math.random(1, 2)..".mp3")
+      timer.Create("TickRoundTimer", (fruit.config.RoundLength or 120) - 5, 1, function() timer.Create("TickOutroFiveTimes", 1, 5, function() surface.PlaySound("buttons/button14.wav") end) end)
+
+    timer.Create("RoundTimer", fruit.config.RoundLength or 120, 1, function()
+        fruit.RoundState = ROUND_OUTRO
+      timer.Create("OutroTimer", fruit.config.RoundOutroTime or 5, 1, function()
+        --do nout
+      end)
+    end)
+  end)
+
+end)
