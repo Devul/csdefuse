@@ -26,7 +26,6 @@ fruit.util.IncludeInDir( "plugins" )
 
 fruit.teams = {}
 
-local teams = {}
 local teamId = 0
 local function createTeam( name, info )
 	local teamData = info
@@ -36,17 +35,17 @@ local function createTeam( name, info )
 
 	team.SetUp( teamId, teamData.name, (teamData.color or Color( 0, 255, 0 )) )
 
-	return table.insert( teams, teamId )
+	return table.insert( fruit.teams, teamId )
 end
 
-fruit.teams.CT = createTeam("Counter-Terrorists", {
+TEAM_COUNTERTERRORISTS = createTeam("Counter-Terrorists", {
 	color = Color( 0, 100, 200, 255 )
 })
 
-fruit.teams.T = createTeam("Terrorists", {
+TEAM_TERRORISTS = createTeam("Terrorists", {
 	color = Color( 255, 191, 0, 255 )
 })
 
-fruit.teams.SPECTATOR = createTeam("Spectators", {
+TEAM_SPECTATOR = createTeam("Spectators", {
 	color = Color(  100, 100, 100, 255 )
 })
