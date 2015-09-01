@@ -225,11 +225,20 @@ end
 
 derma.DefineControl( "fruit_TeamSelectMenu", "Team selection menu for CS: Defuse", PANEL, "DFrame" )
 
+local teamSelectFrame
 function fruit.TeamSelectMenu()
-	local teamSelectFrame = vgui.Create("fruit_TeamSelectMenu")
+	teamSelectFrame = vgui.Create("fruit_TeamSelectMenu")
 end
 concommand.Add("fruit_TeamSelectMenu", fruit.TeamSelectMenu)
 
 net.Receive("fruit_TeamSelectMenu", function(len)
 	fruit.TeamSelectMenu()
+end)
+
+hook.Add("Think", "OpenTeamMenu", function(client, key)
+	if LocalPlayer():IsTyping() then return end
+
+	if input.IsKeyDown( KEY_M ) and not IsValid(teamSelectFrame) then
+		fruit.TeamSelectMenu()
+	end
 end)
