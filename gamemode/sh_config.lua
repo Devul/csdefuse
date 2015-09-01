@@ -14,6 +14,25 @@ fruit.config.customModels = {
 	[3] = {"models/gman_high.mdl"},
 }
 
+fruit.config.weapons = {
+	[1] = {
+		["Pistols"] = {"weapon_csgo_usp", "weapon_csgo_p2000", "weapon_csgo_p250", "weapon_csgo_fn", "weapon_csgo_cz75", "weapon_csgo_deagle"},
+		["Submachine Guns"] = {"weapon_csgo_mp9", "weapon_csgo_ump", "weapon_csgo_mp7", "weapon_csgo_bizon"},
+		["Heavy Weapons"] = {"weapon_csgo_nova"},
+		["Assault Rifles"] = {"weapon_csgo_m4a1_s", "weapon_csgo_m4a4", "weapon_csgo_famas", "weapon_csgo_aug", "weapon_csgo_awp", "weapon_csgo_scar", "weapon_csgo_ssg08"},
+		["Gear"] = {"weapon_csgo_flashbang", "weapon_csgo_taser"},
+	},
+	[1] = {
+		["Pistols"] = {"weapon_csgo_glock", "weapon_csgo_p250", "weapon_csgo_tec9", "weapon_csgo_cz75", "weapon_csgo_deagle"},
+		["Submachine Guns"] = {"weapon_csgo_ump", "weapon_csgo_mp7", "weapon_csgo_bizon"},
+		["Heavy Weapons"] = {"weapon_csgo_nova", "weapon_csgo_xm1014", "weapon_csgo_mag7"},
+		["Assault Rifles"] = {"weapon_csgo_ak47", "weapon_csgo_galil", "weapon_csgo_sg553", "weapon_csgo_awp", "weapon_csgo_g3sg1", "weapon_csgo_ssg08"},
+		["Gear"] = {"weapon_csgo_flashbang", "weapon_csgo_taser"},
+	}
+}
+
+}
+
 fruit.roundStates = {}
 local roundState
 local function createRoundState(name)
