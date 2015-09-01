@@ -10,8 +10,8 @@ fruit.config.RoundIntroTime = 5 -- 5 seconds.
 fruit.config.RoundOutroTime = 5 -- 5 seconds.
 fruit.config.RoundLength = 120 -- 120 seconds.
 
-fruit.config.walkSpeed = 250
-fruit.config.runSpeed = 250
+fruit.config.walkSpeed = 200
+fruit.config.runSpeed = 150
 
 -- Key = teamId
 fruit.config.models = {

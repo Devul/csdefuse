@@ -32,6 +32,11 @@ util.AddNetworkString("fruit_UpdateRoundState")
 util.AddNetworkString("fruit_StartRound")
 util.AddNetworkString("fruit_UpdateScore")
 
+resource.AddFile("background.png")
+resource.AddFile("background_ct.png")
+resource.AddFile("esource/fonts/stratum2_med.ttf")
+resource.AddFile("csgo_hud/shoppingcart.png")
+
 local meta = FindMetaTable("Player")
 
 function fruit.PrintDebug( any )
@@ -92,6 +97,13 @@ function fruit:EndRound( winner )
 	else
 		-- Round draw
 	end
+
+	timer.Remove("IntroTimer")
+	timer.Remove("RoundTimer")
+
+	timer.Create("OutroTimer", fruit.config.RoundOutroTime or 5, 1, function()
+		fruit.RestartRound()
+	end)
 end
 
 function fruit:BeginRound()
@@ -125,9 +137,6 @@ function fruit:BeginRound()
 		timer.Create("RoundTimer", fruit.config.RoundLength or 120, 1, function()
 				fruit.RoundState = ROUND_OUTRO
 				fruit:EndRound( TEAM_TERRORISTS )
-			timer.Create("OutroTimer", fruit.config.RoundOutroTime or 5, 1, function()
-				fruit.RestartRound()
-			end)
 		end)
 	end)
 end
@@ -141,7 +150,7 @@ function fruit:PlayerInitialSpawn( client )
 	end
 end
 
-function fruit:DoPlayerDeath( client, attacker, dmg )
+function fruit:PostPlayerDeath( client )
 	if client:Team() == TEAM_COUNTERTERRORISTS then
 		PLAYERS_CT[client:UserID()] = nil
 	end
@@ -249,17 +258,19 @@ function fruit.SelectTeam(client, teamId)
 	client.hasChosenTeam = true
 	client.lastChosenTeamTime = CurTime()
 
-	if fruit.RoundState and fruit.RoundState == ROUND_ACTIVE then
+	--[[if fruit.RoundState and fruit.RoundState == ROUND_ACTIVE then
 		client.NextTeamChange = teamId
 		fruit.Notify(client, 2, 4, "You will be switched to "..team.GetName(teamId).. " when you next spawn.")
-	else
+	else]]--
 		client:SetTeam(teamId)
 		client:Spawn()
-	end
+	--[[end]]--
 
 	if not fruit.RoundState == ROUND_ACTIVE then
 		client:Spawn()
 	end
+
+	fruit.PrintDebug("[DEBUG] "..client:Name().." chose team; "..team.GetName(teamId))
 
 end
 

@@ -35,7 +35,7 @@ local hudPosY = 40
 
 local function draw_CenterAlert()
    local rs = fruit.RoundState
-   local timeLeft = timer.TimeLeft("RoundTimer")
+   local timeLeft = fruit.RoundState == ROUND_INTRO and timer.TimeLeft("IntroTimer") or fruit.RoundState == ROUND_OUTRO and timer.TimeLeft("OutroTimer") or timer.TimeLeft("RoundTimer")
 
    -- Round Over = rs 4
    -- Warmup = rs2
@@ -532,6 +532,12 @@ net.Receive("fruit_UpdateScore", function(len)
   else
     surface.PlaySound("radio/rounddraw.wav")
   end
+
+  timer.Remove("IntroTimer")
+  timer.Remove("RoundTimer")
+
+  timer.Create("OutroTimer", fruit.config.RoundOutroTime or 5, 1, function()
+  end)
 
   SCORE_CT = ScoreCT
   SCORE_T = ScoreT
