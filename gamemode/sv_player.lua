@@ -52,6 +52,8 @@ function meta:setMoney( amount )
 end
 
 function GM:DoPlayerDeath( client, attacker, dmg )
+	if client:Team() == TEAM_SPECTATOR then return end
+
 	local ragdoll = ents.Create("prop_ragdoll")
 	ragdoll:SetPos(client:GetPos())
 	ragdoll:SetAngles(Angle(0,client:GetAngles().Yaw,0))
@@ -71,4 +73,28 @@ end
 
 function GM:PlayerCanHearPlayersVoice( listener, talker )
 	return (listener:Team() == talker:Team())
+end
+
+local selectedKnife
+function meta:setKnife(knifeName)
+	if not self:Alive() then return end
+	if self:Team() == TEAM_SPECTATOR then return end
+
+	if fruit.config.knifeSkins then
+		selectedKnife = fruit.config.knifeSkins[knifeName]
+	end
+
+	if not selectedKnife then fruit.Notify(self, 1, 4, "That is an invalid knife.")  return end
+
+	if self:HasWeapon(selectedKnife) then fruit.Notify(self, 1, 4, "You already have this knife equipped!") return end
+
+	if fruit.config.defaultKnives then
+		for _, wep in pairs(fruit.config.defaultKnives) do
+			self:StripWeapon(wep)
+		end
+	end
+
+	self:Give(selectedKnife)
+	self:SelectWeapon(selectedKnife)
+	fruit.Notify(self, 2, 4, "You have selected a "..knifeName.. ".")
 end
