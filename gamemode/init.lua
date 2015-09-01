@@ -59,9 +59,6 @@ function fruit.ForceTeamSelect( client )
 end
 
 function GM:PlayerSpawn( client )
-	print("PLayer Is Spawn")
-	print(client.NextTeamChange)
-
 	if client.NextTeamChange then
 		client:SetTeam(client.NextTeamChange)
 		client:Spawn()
@@ -69,7 +66,7 @@ function GM:PlayerSpawn( client )
 
 	if not client.hasChosenTeam or client:Team() == 0 then
 		client:SetTeam( TEAM_SPECTATOR ) 
-	--	fruit:PlayerSpawnAsSpectator( client )
+		fruit:PlayerSpawnAsSpectator( client )
 
 		fruit.ForceTeamSelect( client )
 	end
@@ -80,7 +77,7 @@ function GM:PlayerSpawn( client )
 
 	client:SetModel( table.Random( ( fruit.useCustomModels and fruit.config.customModels[ client:Team() ] or fruit.config.models[ client:Team() ] ) ) )
 	client:SetupHands()
-	
+
 	if fruit.defaultLoadout then
 		for _, weapon in pairs(fruit.defaultLoadout) do
 			client:Give(weapon)
@@ -93,9 +90,6 @@ function GM:PlayerSpawn( client )
 			client:Give(wep)
 		end
 	end
-
-
-
 end
 
 local teamToSpawnEnt = {
