@@ -31,16 +31,11 @@ local cols = {
    white = Color( 255, 255, 255, 255 ),
 }
 
-local hudPosY = 40
+local hudPosY = 74
 
 local function draw_CenterAlert()
    local rs = fruit.RoundState
-   local timeLeft = fruit.RoundState == ROUND_INTRO and timer.TimeLeft("IntroTimer") or fruit.RoundState == ROUND_OUTRO and timer.TimeLeft("OutroTimer") or timer.TimeLeft("RoundTimer")
-
-   -- Round Over = rs 4
-   -- Warmup = rs2
-   -- wait = rs 1
-    
+   local timeLeft = fruit.RoundState == ROUND_INTRO and timer.TimeLeft("IntroTimer") or fruit.RoundState == ROUND_OUTRO and timer.TimeLeft("OutroTimer") or fruit.RoundState == ROUND_WAITINGFORPLAYERS and 817 or timer.TimeLeft("RoundTimer") 
 
   if rs == ROUND_INTRO then
       text = "ROUND STARTING"
@@ -69,7 +64,19 @@ local function draw_CenterAlert()
       surface.DrawTexturedRectRotated( (ScrW() / 4) - 50, hudPosY + 41, 100, 2, 180 )
 
       draw.SimpleText( text, "csgo_text", ScrW() /2, hudPosY + 21, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-      draw.SimpleText( string.ToMinutesSeconds( timeLeft ), "csgo_text", ScrW() /2, hudPosY - 21, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+      surface.SetFont("csgo_text")
+      local timeStr = string.ToMinutesSeconds( timeLeft )
+      local textWidth, textHeight = surface.GetTextSize(timeStr)
+
+      surface.SetDrawColor( cols.frame_bg )
+      surface.DrawRect( ScrW() / 2 - (textWidth / 2) - 8, hudPosY - 70, textWidth + 16, 30 )
+      surface.DrawRect( ScrW() / 2 - (textWidth / 2) - 8, hudPosY - 38, textWidth / 2 + 8, 30 )
+      surface.DrawRect( ScrW() / 2 - (textWidth / 2) + (textWidth / 2) + 2, hudPosY - 38, textWidth / 2 + 6, 30 )
+
+      draw.SimpleText( timeStr, "csgo_text", ScrW() /2, hudPosY - 54, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+      draw.SimpleText( SCORE_CT or 0, "csgo_text", ScrW() /2 - (textWidth/2) + 16, hudPosY - 23, Color( 0, 125, 220, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+      draw.SimpleText( SCORE_T or 0, "csgo_text", ScrW() /2 + (textWidth/2) - 16, hudPosY - 23, Color( 250, 190, 0, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 
    end
 
@@ -480,7 +487,6 @@ function fruit.DrawHUD()
 	draw_Health()
 	draw_WeaponSection()
   draw_Money()
-
 end
 hook.Add("HUDPaint", "fruit.DrawHUD", fruit.DrawHUD)
 
