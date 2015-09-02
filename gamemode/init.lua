@@ -136,21 +136,27 @@ function fruit:BeginRound()
 			end
 		timer.Create("RoundTimer", fruit.config.RoundLength or 120, 1, function()
 				fruit.RoundState = ROUND_OUTRO
-				fruit:EndRound( TEAM_TERRORISTS )
+				fruit:EndRound( TEAM_COUNTERTERRORISTS )
 		end)
 	end)
 end
 
 function fruit:PlayerInitialSpawn( client )
-		fruit.PrintDebug( "[DEBUG] "..client:Name().." -> Connected" )
-		client.hasChosenTeam = false
+	fruit.PrintDebug( "[DEBUG] "..client:Name().." -> Connected" )
+	client.hasChosenTeam = false
 
-	if #player.GetAll() > 1 and fruit.RoundState == ROUND_WAITINGFORPLAYERS then
-		fruit:BeginRound()
-	end
+	client:SetNoDraw(true)
+
+	timer.Simple(1, function()
+		if (!IsValid(client)) then return end
+		
+		client:KillSilent()
+	end)
 end
 
 function fruit:PostPlayerDeath( client )
+	if fruit.RoundState != ROUND_ACTIVE then return end
+
 	if client:Team() == TEAM_COUNTERTERRORISTS then
 		PLAYERS_CT[client:UserID()] = nil
 	end
@@ -184,6 +190,7 @@ function GM:PlayerSpawn( client )
 
 	if client.NextTeamChange then
 		client:SetTeam(client.NextTeamChange)
+		client:KillSilent()
 		client:Spawn()
 	end
 
@@ -193,6 +200,7 @@ function GM:PlayerSpawn( client )
 				fruit.SelectTeam(client, teamId)
 				client:SetTeam(teamId)
 				client:Spawn()
+			return
 		end
 
 		client:SetTeam( TEAM_SPECTATOR ) 
@@ -268,6 +276,10 @@ function fruit.SelectTeam(client, teamId)
 
 	if not fruit.RoundState == ROUND_ACTIVE then
 		client:Spawn()
+	end
+
+	if #team.GetPlayers(TEAM_COUNTERTERRORISTS) > 1 and #team.GetPlayers(TEAM_TERRORISTS) and fruit.RoundState == ROUND_WAITINGFORPLAYERS then
+		fruit:RestartRound()
 	end
 
 	fruit.PrintDebug("[DEBUG] "..client:Name().." chose team; "..team.GetName(teamId))
