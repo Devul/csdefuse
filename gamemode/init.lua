@@ -271,6 +271,7 @@ function fruit.SelectTeam(client, teamId)
 		fruit.Notify(client, 2, 4, "You will be switched to "..team.GetName(teamId).. " when you next spawn.")
 	else]]--
 		client:SetTeam(teamId)
+		client:KillSilent()
 		client:Spawn()
 	--[[end]]--
 
