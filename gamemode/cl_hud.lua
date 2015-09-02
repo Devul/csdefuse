@@ -34,8 +34,9 @@ local cols = {
 local hudPosY = 74
 
 local function draw_CenterAlert()
-   local rs = fruit.RoundState
-   local timeLeft = fruit.RoundState == ROUND_INTRO and timer.TimeLeft("IntroTimer") or fruit.RoundState == ROUND_OUTRO and timer.TimeLeft("OutroTimer") or fruit.RoundState == ROUND_WAITINGFORPLAYERS and 817 or timer.TimeLeft("RoundTimer") 
+  local rs = fruit.RoundState
+  local timeLeft = fruit.RoundState == ROUND_INTRO and timer.TimeLeft("IntroTimer") or fruit.RoundState == ROUND_OUTRO and timer.TimeLeft("OutroTimer") or fruit.RoundState == ROUND_WAITINGFORPLAYERS and 817 or timer.TimeLeft("RoundTimer") 
+  local text
 
   if rs == ROUND_INTRO then
       text = "ROUND STARTING"
@@ -49,7 +50,7 @@ local function draw_CenterAlert()
       text = "ROUND ENDED"
    end
 
-   if rs != ROUND_ACTIVE then
+  if rs != ROUND_ACTIVE then
       surface.SetDrawColor( cols.frame_bg )
       surface.DrawRect( ScrW() /4, hudPosY, ScrW() /2, 42 )
       surface.SetMaterial( gradient )
@@ -63,7 +64,7 @@ local function draw_CenterAlert()
       surface.DrawTexturedRectRotated( (ScrW() / 4) - 50, hudPosY + 41, 100, 2, 180 )
 
       draw.SimpleText( text, "csgo_text", ScrW() /2, hudPosY + 21, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-   end
+  end
 
   surface.SetFont("csgo_text")
   local timeStr = string.ToMinutesSeconds( timeLeft )
