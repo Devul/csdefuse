@@ -40,17 +40,16 @@ local function draw_CenterAlert()
   if rs == ROUND_INTRO then
       text = "ROUND STARTING"
   elseif rs == ROUND_WARMINGUP then
-      text = "WARMING UP"
+      text = "WARMUP"
   elseif rs == ROUND_WAITINGFORPLAYERS then
       text = "WAITING FOR PLAYERS"
   elseif rs == ROUND_ACTIVE then
-      text = "ROUND ACTIVE"
+      text = ""
   elseif rs == ROUND_OUTRO then
       text = "ROUND ENDED"
    end
 
-   if rs != 0 then
-
+   if rs != ROUND_ACTIVE then
       surface.SetDrawColor( cols.frame_bg )
       surface.DrawRect( ScrW() /4, hudPosY, ScrW() /2, 42 )
       surface.SetMaterial( gradient )
@@ -64,22 +63,22 @@ local function draw_CenterAlert()
       surface.DrawTexturedRectRotated( (ScrW() / 4) - 50, hudPosY + 41, 100, 2, 180 )
 
       draw.SimpleText( text, "csgo_text", ScrW() /2, hudPosY + 21, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-
-      surface.SetFont("csgo_text")
-      local timeStr = string.ToMinutesSeconds( timeLeft )
-      local textWidth, textHeight = surface.GetTextSize(timeStr)
-
-      surface.SetDrawColor( cols.frame_bg )
-      surface.DrawRect( ScrW() / 2 - (textWidth / 2) - 8, hudPosY - 70, textWidth + 16, 30 )
-      surface.DrawRect( ScrW() / 2 - (textWidth / 2) - 8, hudPosY - 38, textWidth / 2 + 8, 30 )
-      surface.DrawRect( ScrW() / 2 - (textWidth / 2) + (textWidth / 2) + 2, hudPosY - 38, textWidth / 2 + 6, 30 )
-
-      draw.SimpleText( timeStr, "csgo_text", ScrW() /2, hudPosY - 54, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-      draw.SimpleText( SCORE_CT or 0, "csgo_text", ScrW() /2 - (textWidth/2) + 16, hudPosY - 23, Color( 0, 125, 220, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-      draw.SimpleText( SCORE_T or 0, "csgo_text", ScrW() /2 + (textWidth/2) - 16, hudPosY - 23, Color( 250, 190, 0, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
-
    end
 
+  surface.SetFont("csgo_text")
+  local timeStr = string.ToMinutesSeconds( timeLeft )
+  local textWidth, textHeight = surface.GetTextSize(timeStr)
+
+  surface.SetDrawColor( cols.frame_bg )
+  surface.DrawRect( ScrW() / 2 - (textWidth / 2) - 8, hudPosY - 70, textWidth + 16, 30 )
+
+  draw.SimpleText( timeStr, "csgo_text", ScrW() /2, hudPosY - 54, Color( 255, 255, 255, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+
+  surface.DrawRect( ScrW() / 2 - (textWidth / 2) - 8, hudPosY - 38, textWidth / 2 + 8, 30 )
+  surface.DrawRect( ScrW() / 2 - (textWidth / 2) + (textWidth / 2) + 2, hudPosY - 38, textWidth / 2 + 6, 30 )
+
+  draw.SimpleText( SCORE_CT or 0, "csgo_text", ScrW() /2 - (textWidth/2) + 16, hudPosY - 23, Color( 0, 125, 220, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
+  draw.SimpleText( SCORE_T or 0, "csgo_text", ScrW() /2 + (textWidth/2) - 16, hudPosY - 23, Color( 250, 190, 0, 255 ), TEXT_ALIGN_CENTER, TEXT_ALIGN_CENTER )
 end
 
 local PADDING, WIDTH, HALFWIDTH = 10, 16, 6
@@ -93,7 +92,7 @@ local function DrawBulletHud(bullets, x, y, red, scale)
     if not bullets or bullets < 1 then return end
      
     surface.SetDrawColor(255,255,255,255)
-    
+
     if LastBullet != bullets then
         Changedbullets = math.min(bullets, 5 - (LastBullet - bullets))
         if bullets > LastBullet then 
@@ -114,12 +113,11 @@ local function DrawBulletHud(bullets, x, y, red, scale)
         LastBullet = bullets
     end
     bullets = math.min(bullets, 5)
-    --if SmoothingIn then bullets = bullets - 1 end
- 
+
     local xpos = x + 30 + PADDING + 1000
     surface.SetMaterial(BULLET_MATERIAL)
-    
-    
+
+
     if SmoothingIn then
         smooth = math.Approach(smooth, 1, 3 * FrameTime())
         
@@ -145,7 +143,7 @@ local function DrawBulletHud(bullets, x, y, red, scale)
             surface.DrawTexturedRect(xpos - i * HALFWIDTH, y, WIDTH, WIDTH) 
         end
     end
-    
+
     for k, v in pairs (Flyingbullets) do
         Flyingbullets[k] = v - FrameTime()
         if v < 0 then Flyingbullets[k] = nil continue end
@@ -160,21 +158,19 @@ local function DrawBulletHud(bullets, x, y, red, scale)
 end
 
 function csgo_bullet_hud()
-if( !IsValid( LocalPlayer() ) or !IsValid( LocalPlayer():GetActiveWeapon() ) ) then return end
+  if( !IsValid( LocalPlayer() ) or !IsValid( LocalPlayer():GetActiveWeapon() ) ) then return end
 
-    local wep = LocalPlayer():GetActiveWeapon();
-    local clip = wep:Clip1() or 0;
-	local maxammo = LocalPlayer():GetAmmoCount(wep:GetPrimaryAmmoType()) or 0
-    local red = clip <= math.ceil(maxammo / 7)
+  local wep = LocalPlayer():GetActiveWeapon();
+  local clip = wep:Clip1() or 0;
+  local maxammo = LocalPlayer():GetAmmoCount(wep:GetPrimaryAmmoType()) or 0
+  local red = clip <= math.ceil(maxammo / 7)
 
-    local role_text = team.GetName(LocalPlayer():Team())
+  local role_text = team.GetName(LocalPlayer():Team())
 
-    surface.SetDrawColor(Color(255, 255, 255, 255))
+  surface.SetDrawColor(Color(255, 255, 255, 255))
 
-    DrawBulletHud( clip, ScrW() - 1085, ScrH() - 27, red, 1.0 )
+  DrawBulletHud( clip, ScrW() - 1085, ScrH() - 27, red, 1.0 )
 end
-
-local csgo_classes = {}
 
 local function draw_WeaponSection() -- Section not selection XD
 
@@ -185,24 +181,19 @@ local function draw_WeaponSection() -- Section not selection XD
    local role_text = team.GetName(pl:Team())
 
    local polygon = {
-
       { x = sw - 12, y = sh },
       { x = sw - 12, y = sh - 42 },
       { x = sw , y = sh - 42 },
       { x = sw , y = sh - 8 }
-   
    }
 
    local polygon_ang = {
-
       { x = sw - 12, y = sh },
       { x = sw - 12, y = sh - 2 },
       { x = sw - 2, y = sh - 8 },
       { x = sw, y = sh - 8 }
-
    }
 
-   -- Background
    surface.SetDrawColor( cols.frame_bg )
    draw.NoTexture()
    surface.DrawPoly( polygon )
@@ -214,16 +205,15 @@ local function draw_WeaponSection() -- Section not selection XD
 
    surface.SetDrawColor( Color(0,0,0,100) )
    draw.NoTexture()
-   surface.DrawPoly( polygon_ang ) -- Frame Angle
+   surface.DrawPoly( polygon_ang )
 
-   surface.DrawRect( sw - 200, sh - 2, 188, 2 ) -- Bottom Line
-   surface.DrawRect( sw - 2, sh - 40, 2, 32 ) -- Right line
-   surface.DrawRect( sw - 200, sh - 42, 200, 2 ) -- Top line
+   surface.DrawRect( sw - 200, sh - 2, 188, 2 )
+   surface.DrawRect( sw - 2, sh - 40, 2, 32 )
+   surface.DrawRect( sw - 200, sh - 42, 200, 2 )
 
    surface.SetMaterial( gradient )
-   surface.DrawTexturedRectRotated( sw - 250, sh - 41, 100, 2, 180 ) -- top gradient
-   surface.DrawTexturedRectRotated( sw - 250, sh - 1, 100, 2, 180 ) -- bottom gradient
-
+   surface.DrawTexturedRectRotated( sw - 250, sh - 41, 100, 2, 180 )
+   surface.DrawTexturedRectRotated( sw - 250, sh - 1, 100, 2, 180 )
     curcol = Color(255, 255, 255, 255)   
 
    if pl:GetActiveWeapon() then
@@ -232,26 +222,13 @@ local function draw_WeaponSection() -- Section not selection XD
     if not wep then return end
 
     local ammo_clip = wep.Clip1 and wep:Clip1() or 0;
-	local ammo_max = LocalPlayer():GetAmmoCount(wep.GetPrimaryAmmoType and wep:GetPrimaryAmmoType() or 0) or 0
+    local ammo_max = LocalPlayer():GetAmmoCount(wep.GetPrimaryAmmoType and wep:GetPrimaryAmmoType() or 0) or 0
 
       if ammo_clip != -1 then
-
          draw.SimpleText( ammo_clip, "csgo_text", sw - 150, sh-38, curcol, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
          draw.SimpleText( "/  "..ammo_max, "csgo_inv", sw - 140, sh-30, curcol, TEXT_ALIGN_LEFT, TEXT_ALIGN_LEFT )
          csgo_bullet_hud()
-
-      else
-
-         local classname = pl:GetActiveWeapon():GetClass()
-
-         if csgo_classes[classname] then
-            local classmat = Material(csgo_classes[classname])
-            surface.SetDrawColor(curcol)
-            surface.SetMaterial(classmat)
-            surface.DrawTexturedRect(sw - 150, sh - 50 , 128, 128)
-           -- print(" THERE SHOULD BE A ICON MATERIAL HERE")
-         end
-      end      
+      end     
 
    end
 
@@ -295,187 +272,168 @@ end
 
 valuemath = 0
 local function draw_Bar( x, y, w, h, col, col_low, value, lowval )
+  if value <= lowval then
+    surface.SetDrawColor( cols.white )
+  else
+    surface.SetDrawColor( col )
+  end
 
-   if value <= lowval then
-      surface.SetDrawColor( cols.white )
-   else
-      surface.SetDrawColor( col )
-   end
+  surface.DrawLine( x, y, x + w, y )
+  surface.DrawLine( x, y + h, x + w, y + h )
+  surface.DrawLine( x, y, x, y + h )
+  surface.DrawLine( x + w, y, x + w, y + h )
 
-   surface.DrawLine( x, y, x + w, y )
-   surface.DrawLine( x, y + h, x + w, y + h )
-   surface.DrawLine( x, y, x, y + h )
-   surface.DrawLine( x + w, y, x + w, y + h )
+  valuemath = math.Approach( valuemath, value, 100*FrameTime() )
 
-   valuemath = math.Approach( valuemath, value, 100*FrameTime() )
+  boxwidth = (w - 3) * (valuemath/100)
 
-   boxwidth = (w - 3) * (valuemath/100)
-
-   surface.DrawRect( x+2, y+2, boxwidth, h-3)
+  surface.DrawRect( x+2, y+2, boxwidth, h-3)
 end
 
 local function draw_Health()
 
-   local pl = LocalPlayer()
-   local hp = pl:Health()
-   local sh = ScrH()
-   local role_text = team.GetName(LocalPlayer():Team())
+  local pl = LocalPlayer()
+  local hp = pl:Health()
+  local sh = ScrH()
+  local role_text = team.GetName(LocalPlayer():Team())
 
-   local polygon = {
+  local polygon = {
+    { x = 0, y = sh - 8 },
+    { x = 0, y = sh - 42 },
+    { x = 12, y = sh - 42 },
+    { x = 12, y = sh }
+  }
 
-      { x = 0, y = sh - 8 },
-      { x = 0, y = sh - 42 },
-      { x = 12, y = sh - 42 },
-      { x = 12, y = sh }
+  local polygon_ang = {
+    { x = 0, y = sh - 8 },
+    { x = 2, y = sh - 8 }, 
+    { x = 12, y = sh - 2 },
+    { x = 12, y = sh }
+  }
 
-   }
-
-   local polygon_ang = {
-
-      { x = 0, y = sh - 8 },
-      { x = 2, y = sh - 8 }, 
-      { x = 12, y = sh - 2 },
-      { x = 12, y = sh }
-
-   }
-
-   if hp <= 15 then
-      surface.SetDrawColor( cols.low_hp )
-   else
-      surface.SetDrawColor( cols.frame_bg )
-   end
-   
-   if pl:GetNWFloat("w_stamina") and pl:GetNWFloat("w_stamina") != 0 then
-      frame_width = 318
-   else
-      frame_width = 188
-   end
-
-   xpos = 12
-   edgepos = xpos + frame_width
-
-   draw.NoTexture()
-   surface.DrawPoly( polygon )
-   surface.DrawRect( xpos, sh - 42, frame_width, 42) -- Big box
-
-   surface.SetMaterial( gradient )
-   surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
-   
   if hp <= 15 then
-      surface.SetDrawColor( cols.low_hp )
-    else
-      surface.SetDrawColor( Color(0, 0, 0, 150) )
-    end
+    surface.SetDrawColor( cols.low_hp )
+  else
+    surface.SetDrawColor( cols.frame_bg )
+  end
 
-   surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
-   surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
-   surface.DrawRect( xpos, sh - 2, frame_width, 2 ) -- Top Horizontal
-   draw.NoTexture()
-   surface.DrawPoly( polygon_ang )
+  frame_width = 188
+  xpos = 12
+  edgepos = xpos + frame_width
 
-   surface.SetMaterial( gradient )
-   surface.DrawTexturedRect( edgepos, sh - 42, 100, 2 ) -- gradient frame upper
-   surface.DrawTexturedRect( edgepos, sh - 2, 100, 2 ) -- gradient frame lower
+  draw.NoTexture()
+  surface.DrawPoly( polygon )
+  surface.DrawRect( xpos, sh - 42, frame_width, 42) -- Big box
 
-   if hp <= 15 then
-      surface.SetDrawColor( cols.white )
-      num_col = cols.white
-   else
-      surface.SetDrawColor( Color(255, 255, 255, 255) )
-      num_col = Color(255, 255, 255, 255) 
-   end
+  surface.SetMaterial( gradient )
+  surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
 
-   local health_tex = Material( "csgo_hud/health_symbol.png" )
-   surface.SetMaterial( health_tex )
-   surface.DrawTexturedRect( 14, sh - 27, 17, 17 )
+  if hp <= 15 then
+    surface.SetDrawColor( cols.low_hp )
+  else
+    surface.SetDrawColor( Color(0, 0, 0, 150) )
+  end
 
-   player_health = math.Clamp( hp, 0 , 100)
+  surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
+  surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
+  surface.DrawRect( xpos, sh - 2, frame_width, 2 ) -- Top Horizontal
+  draw.NoTexture()
+  surface.DrawPoly( polygon_ang )
 
-   draw.SimpleText( player_health, "csgo_text", 82, sh - 40, num_col, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
+  surface.SetMaterial( gradient )
+  surface.DrawTexturedRect( edgepos, sh - 42, 100, 2 ) -- gradient frame upper
+  surface.DrawTexturedRect( edgepos, sh - 2, 100, 2 ) -- gradient frame lower
+
+  if hp <= 15 then
+    surface.SetDrawColor( cols.white )
+    num_col = cols.white
+  else
+    surface.SetDrawColor( Color(255, 255, 255, 255) )
+    num_col = Color(255, 255, 255, 255) 
+  end
+
+  local health_tex = Material( "csgo_hud/health_symbol.png" )
+  surface.SetMaterial( health_tex )
+  surface.DrawTexturedRect( 14, sh - 27, 17, 17 )
+
+  player_health = math.Clamp( hp, 0 , 100)
+
+  draw.SimpleText( player_health, "csgo_text", 82, sh - 40, num_col, TEXT_ALIGN_RIGHT, TEXT_ALIGN_RIGHT )
 
   if GetConVar("fruit_hud_drawbars"):GetBool() then
-    draw_Bar( 90, sh - 26, 110, 18, num_col, white, math.Clamp( hp, 0, 100 ), 15 )
+  draw_Bar( 90, sh - 26, 110, 18, num_col, white, math.Clamp( hp, 0, 100 ), 15 )
   end
 end
 
 local function draw_Money()
 
-   local pl = LocalPlayer()
-   local hp = pl:Health()
-   local sh = ScrH() * 0.2
-   local role_text = team.GetName(LocalPlayer():Team())
+  local pl = LocalPlayer()
+  local hp = pl:Health()
+  local sh = ScrH() * 0.2
+  local role_text = team.GetName(LocalPlayer():Team())
 
-   local polygon = {
+  local polygon = {
+    { x = 0, y = sh - 8 },
+    { x = 0, y = sh - 42 },
+    { x = 12, y = sh - 42 },
+    { x = 12, y = sh }
+  }
 
-      { x = 0, y = sh - 8 },
-      { x = 0, y = sh - 42 },
-      { x = 12, y = sh - 42 },
-      { x = 12, y = sh }
+  local polygon_ang = {
+    { x = 0, y = sh - 8 },
+    { x = 2, y = sh - 8 }, 
+    { x = 12, y = sh - 2 },
+    { x = 12, y = sh }
+  }
 
-   }
+  if hp <= 15 then
+    surface.SetDrawColor( cols.low_hp )
+  else
+    surface.SetDrawColor( cols.frame_bg )
+  end
 
-   local polygon_ang = {
+  frame_width = 188
+  xpos = 12
+  edgepos = xpos + frame_width
 
-      { x = 0, y = sh - 8 },
-      { x = 2, y = sh - 8 }, 
-      { x = 12, y = sh - 2 },
-      { x = 12, y = sh }
+  draw.NoTexture()
+  surface.DrawPoly( polygon )
+  surface.DrawRect( xpos, sh - 42, frame_width, 42) -- Big box
 
-   }
-
-   if hp <= 15 then
-      surface.SetDrawColor( cols.low_hp )
-   else
-      surface.SetDrawColor( cols.frame_bg )
-   end
-   
-   if pl:GetNWFloat("w_stamina") and pl:GetNWFloat("w_stamina") != 0 then
-      frame_width = 318
-   else
-      frame_width = 188
-   end
-
-   xpos = 12
-   edgepos = xpos + frame_width
-
-   draw.NoTexture()
-   surface.DrawPoly( polygon )
-   surface.DrawRect( xpos, sh - 42, frame_width, 42) -- Big box
-
-   surface.SetMaterial( gradient )
-   surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
+  surface.SetMaterial( gradient )
+  surface.DrawTexturedRect( edgepos, sh - 42, 100, 42 ) -- BG Gradient
    
   if hp <= 15 then
-      surface.SetDrawColor( cols.low_hp )
-    else
-      surface.SetDrawColor( Color(0, 0, 0, 150) )
-    end
+    surface.SetDrawColor( cols.low_hp )
+  else
+    surface.SetDrawColor( Color(0, 0, 0, 150) )
+  end
 
-   surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
-   surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
-   surface.DrawRect( xpos, sh - 2, frame_width, 2 ) -- Top Horizontal
-   draw.NoTexture()
-   surface.DrawPoly( polygon_ang )
+  surface.DrawRect( 0, sh - 40, 2, 32 ) -- Left Vertical
+  surface.DrawRect( 0, sh - 42, edgepos, 2 ) -- Top Horizontal
+  surface.DrawRect( xpos, sh - 2, frame_width, 2 ) -- Top Horizontal
+  draw.NoTexture()
+  surface.DrawPoly( polygon_ang )
 
-   surface.SetMaterial( gradient )
-   surface.DrawTexturedRect( edgepos, sh - 42, 100, 2 ) -- gradient frame upper
-   surface.DrawTexturedRect( edgepos, sh - 2, 100, 2 ) -- gradient frame lower
+  surface.SetMaterial( gradient )
+  surface.DrawTexturedRect( edgepos, sh - 42, 100, 2 ) -- gradient frame upper
+  surface.DrawTexturedRect( edgepos, sh - 2, 100, 2 ) -- gradient frame lower
 
-   if hp <= 15 then
-      surface.SetDrawColor( cols.white )
-      num_col = cols.white
-   else
-      surface.SetDrawColor( Color(255, 255, 255, 255) )
-      num_col = Color(255, 255, 255, 255) 
-   end
+  if hp <= 15 then
+    surface.SetDrawColor( cols.white )
+    num_col = cols.white
+  else
+    surface.SetDrawColor( Color(255, 255, 255, 255) )
+    num_col = Color(255, 255, 255, 255) 
+  end
 
-   local health_tex = Material( "csgo_hud/shoppingcart.png", "smooth mips" )
-   surface.SetMaterial( health_tex )
-   surface.DrawTexturedRect( 14, sh - 30, 20, 20 )
+  local health_tex = Material( "csgo_hud/shoppingcart.png", "smooth mips" )
+  surface.SetMaterial( health_tex )
+  surface.DrawTexturedRect( 14, sh - 30, 20, 20 )
 
-   money = fruit.formatMoney(getMoney())
+  money = fruit.formatMoney(getMoney())
 
-   draw.SimpleText( money, "csgo_text", 42, sh - 40, num_col, TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
+  draw.SimpleText( money, "csgo_text", 42, sh - 40, num_col, TEXT_ALIGN_LEFT, TEXT_ALIGN_RIGHT )
 
   if GetConVar("fruit_hud_drawbars"):GetBool() then
     draw_Bar( 90, sh - 26, 110, 18, num_col, white, math.Clamp( hp, 0, 100 ), 15 )
